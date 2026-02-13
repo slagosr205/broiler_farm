@@ -4,6 +4,7 @@
         <field name="model">broiler.daily.log</field>
         <field name="arch" type="xml">
             <list>
+                <field name="name"/>
                 <field name="date"/>
                 <field name="flock_id"/>
                 <field name="feed_starter_product_tmpl_id"/>
@@ -23,8 +24,13 @@
         <field name="model">broiler.daily.log</field>
         <field name="arch" type="xml">
             <form string="Registro Diario">
+                <header>
+                    <button name="action_view_pending_pickings" type="object" string="Ver Pickings Pendientes"
+                            class="btn-primary" invisible="not flock_id"/>
+                </header>
                 <sheet>
                     <group>
+                        <field name="name"/>
                         <field name="flock_id"/>
                         <field name="date"/>
                     </group>

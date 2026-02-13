@@ -16,6 +16,7 @@ class BroilerDailyLog(models.Model):
         "broiler.flock", string="Lote",
         required=True, ondelete="cascade", index=True, tracking=True
     )
+    name = fields.Char(string="Referencia", readonly=True, copy=False)
     date = fields.Date(
         string="Fecha", required=True,
         default=fields.Date.context_today, tracking=True
@@ -80,9 +81,7 @@ class BroilerDailyLog(models.Model):
         copy=False,  # No copiar movimientos al duplicar
     )
 
-    _sql_constraints = [
-        ("uniq_flock_date", "unique(flock_id, date)", "Ya existe un registro para este lote en esa fecha.")
-    ]
+    _sql_constraints = []
 
     # -----------------------
     # DEBUG / LOG
@@ -154,6 +153,7 @@ class BroilerDailyLog(models.Model):
         self.ensure_one()
         flock = self.flock_id
         if not flock:
+            _logger.warning(f'Registro diario {self.id}: No hay lote asignado')
             return
 
         starter = (
@@ -174,6 +174,8 @@ class BroilerDailyLog(models.Model):
         want_starter = float(self.feed_starter_kg or 0.0)
         want_finisher = float(self.feed_finisher_kg or 0.0)
 
+        _logger.info(f'Registro diario {self.id}: starter={want_starter}, finisher={want_finisher}')
+
         if self.stock_move_ids:
             pickings_to_remove = self.stock_move_ids.mapped('picking_id')
             moves_to_remove = self.stock_move_ids
@@ -193,10 +195,12 @@ class BroilerDailyLog(models.Model):
             pickings_to_remove.filtered(lambda p: p.state == 'cancel').unlink()
 
         if want_starter <= 0 and want_finisher <= 0:
+            _logger.info(f'Registro diario {self.id}: Sin consumo de alimento, no se crea picking')
             return
 
         picking_type = self._get_salida_broiler_picking_type()
         if not picking_type:
+            _logger.error(f'No se encontró picking type Salida Broiler')
             raise ValidationError(
                 "No se encontró el tipo de operación 'Salida Broiler'. "
                 "Reinstala el módulo broiler_farm."
@@ -254,11 +258,29 @@ class BroilerDailyLog(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get("name"):
+                vals["name"] = self.env['ir.sequence'].next_by_code('broiler.daily.log') or '/'
         records = super().create(vals_list)
         for rec in records:
             _logger.info(f"DEBUG: BroilerDailyLog.create llamado - ID: {rec.id}, Flock: {rec.flock_id.name if rec.flock_id else 'None'}")
             rec._sync_stock_consumption_moves()
         return records
+
+    def action_view_pending_pickings(self):
+        self.ensure_one()
+        broiler_picking_type = self.env.ref("broiler_farm.picking_type_salida_broiler", False)
+        domain = [("state", "in", ["assigned", "waiting", "confirmed"])]
+        if broiler_picking_type:
+            domain.append(("picking_type_id", "=", broiler_picking_type.id))
+        return {
+            "name": "Pickings Pendientes",
+            "type": "ir.actions.act_window",
+            "res_model": "stock.picking",
+            "view_mode": "list,form",
+            "domain": domain,
+            "context": {"create": False},
+        }
 
     @api.depends('flock_id.feed_starter_product_tmpl_id', 'flock_id.feed_finisher_product_tmpl_id', 'flock_id')
     def _compute_stock_available_daily(self):

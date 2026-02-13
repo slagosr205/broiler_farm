@@ -15,7 +15,7 @@ class BroilerFlock(models.Model):
     # Nombre automático: LOTE_DDMMAAAA(-NNN)
     name = fields.Char(string="Lote", required=True, tracking=True, readonly=True, default="/")
 
-    date_in = fields.Date(string="Fecha de Ingreso", required=True, tracking=True)
+    date_in = fields.Datetime(string="Fecha y Hora de Ingreso", required=True, tracking=True)
     initial_qty = fields.Integer(string="Cantidad Inicial", required=True, tracking=True)
 
     farm_name = fields.Char(string="Granja")
@@ -128,8 +128,8 @@ class BroilerFlock(models.Model):
     def create(self, vals_list):
         # Generar nombre
         for vals in vals_list:
-            date_in = vals.get("date_in") or fields.Date.context_today(self)
-            date_in = fields.Date.to_date(date_in)
+            date_in = vals.get("date_in") or fields.Datetime.now()
+            date_in = fields.Datetime.to_datetime(date_in)
             company_id = vals.get("company_id") or self.env.company.id
 
             if not vals.get("name") or vals.get("name") == "/":
@@ -153,7 +153,7 @@ class BroilerFlock(models.Model):
     def write(self, vals):
         # Si cambian date_in en borrador, re-nombrar
         if "date_in" in vals:
-            new_date = fields.Date.to_date(vals["date_in"])
+            new_date = fields.Datetime.to_datetime(vals["date_in"])
             for rec in self:
                 if rec.state == "draft" and rec.name and rec.name.startswith("LOTE_"):
                     vals2 = dict(vals)
@@ -166,23 +166,23 @@ class BroilerFlock(models.Model):
         if company_id is None:
             company_id = self.company_id.id if self.company_id else self.env.company.id
         ddmmyyyy = date_in.strftime("%d%m%Y")
-        prefix = f"LOTE_{ddmmyyyy}"
+        now = fields.Datetime.now().strftime("%H%M%S")
+        return f"LOTE_{ddmmyyyy}{now}"
 
-        domain = [("name", "like", prefix + "%"), ("company_id", "=", company_id)]
-        existing = self.search(domain).mapped("name")
-        if not existing:
-            return prefix
-
-        max_n = 0
-        pattern = re.compile(rf"^{re.escape(prefix)}-(\d+)$")
-        for nm in existing:
-            m = pattern.match(nm)
-            if m:
-                max_n = max(max_n, int(m.group(1)))
-            elif nm == prefix:
-                max_n = max(max_n, 0)
-
-        return f"{prefix}-{max_n + 1}"
+    def action_view_pending_pickings(self):
+        self.ensure_one()
+        broiler_picking_type = self.env.ref("broiler_farm.picking_type_salida_broiler", False)
+        domain = [("state", "in", ["assigned", "waiting", "confirmed"])]
+        if broiler_picking_type:
+            domain.append(("picking_type_id", "=", broiler_picking_type.id))
+        return {
+            "name": "Pickings Pendientes",
+            "type": "ir.actions.act_window",
+            "res_model": "stock.picking",
+            "view_mode": "list,form",
+            "domain": domain,
+            "context": {"create": False},
+        }
 
     # -------------------------
     # KPIs
@@ -199,7 +199,7 @@ class BroilerFlock(models.Model):
     def _compute_kpis(self):
         for flock in self:
             if flock.date_in:
-                today = fields.Date.context_today(flock)
+                today = fields.Datetime.now()
                 flock.age_days = max((today - flock.date_in).days, 0)
             else:
                 flock.age_days = 0

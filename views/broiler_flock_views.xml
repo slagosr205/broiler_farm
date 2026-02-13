@@ -27,6 +27,8 @@
         <field name="arch" type="xml">
             <form string="Lote">
                 <header>
+                    <button name="action_view_pending_pickings" type="object" string="Ver Pickings Pendientes"
+                            class="btn-primary"/>
                     <button name="action_set_active" type="object" string="Activar"
                             class="btn-primary" invisible="state != 'draft'"/>
                     <button name="action_set_closed" type="object" string="Cerrar"

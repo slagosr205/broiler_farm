@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 from odoo import api, fields, models
 
@@ -9,6 +10,16 @@ class StockPicking(models.Model):
     _inherit = "stock.picking"
 
     broiler_flock_id = fields.Many2one("broiler.flock", string="Lote")
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            picking_type = self.env['stock.picking.type'].browse(vals.get('picking_type_id'))
+            if picking_type and picking_type.sequence_code == 'SB':
+                if not vals.get('name') or vals.get('name') == '/':
+                    suffix = str(uuid.uuid4())[:8].upper()
+                    vals['name'] = f"SB_{suffix}"
+        return super().create(vals_list)
 
     @api.onchange("broiler_flock_id")
     def _onchange_broiler_flock_id(self):

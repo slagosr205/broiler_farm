@@ -15,6 +15,14 @@
             <field name="padding">5</field>
         </record>
 
+        <!-- Secuencia para Registro Diario -->
+        <record id="seq_broiler_daily_log" model="ir.sequence">
+            <field name="name">Registro Diario Broiler</field>
+            <field name="code">broiler.daily.log</field>
+            <field name="prefix">LOG_</field>
+            <field name="padding">6</field>
+        </record>
+
         <!-- Picking Type: Salida Broiler -->
         <record id="picking_type_salida_broiler" model="stock.picking.type">
             <field name="name">Salida Broiler</field>

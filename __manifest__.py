@@ -8,6 +8,7 @@
         "security/ir.model.access.csv",
         "data/picking_type_salida_broiler.xml",
         "data/reprocess_stock_moves.xml",
+        "data/cron_refresh_dashboard.xml",
         "report/report_salida_broiler.xml",
         "report/report_broiler_flock.xml",
 
@@ -23,4 +24,5 @@
     "application": True,
     "license": "LGPL-3",
     "web_icon": "broiler_farm,static/description/icon.png",
+    "post_init_hook": "_fix_sequence_on_install",
 }

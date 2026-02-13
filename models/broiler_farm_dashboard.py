@@ -9,6 +9,7 @@ class BroilerFarmDashboard(models.Model):
     _rec_name = "display_name"
 
     display_name = fields.Char(string="Dashboard", compute="_compute_display_name", store=False)
+    last_update = fields.Datetime(string="Última actualización", compute="_compute_last_update", store=False)
 
     # KPIs principales
     total_flocks = fields.Integer(string="Total Lotes", compute="_compute_kpis")
@@ -40,11 +41,42 @@ class BroilerFarmDashboard(models.Model):
     # Graph data
     flocks_graph = fields.Text(string="Gráfico Lotes", compute="_compute_graphs")
     pickings_graph = fields.Text(string="Gráfico Pickings", compute="_compute_graphs")
+    weight_graph = fields.Text(string="Gráfico Pesos", compute="_compute_graphs")
 
-    @api.depends("display_name")
+    # Data for embedded views
+    flock_ids = fields.Many2many("broiler.flock", string="Lotes", compute="_compute_data_lists")
+    picking_ids = fields.Many2many("stock.picking", string="Pickings", compute="_compute_data_lists")
+
+    @api.depends("last_update")
+    def _compute_data_lists(self):
+        for rec in self:
+            flock_model = self.env["broiler.flock"]
+            picking_model = self.env["stock.picking"]
+            broiler_picking_type = self.env.ref("broiler_farm.picking_type_salida_broiler", False)
+            
+            all_flocks = flock_model.search([])
+            domain = []
+            if broiler_picking_type:
+                domain.append(("picking_type_id", "=", broiler_picking_type.id))
+            all_pickings = picking_model.search(domain)
+            
+            rec.flock_ids = [(6, 0, all_flocks.ids)]
+            rec.picking_ids = [(6, 0, all_pickings.ids)]
+
+    @api.depends("last_update")
     def _compute_display_name(self):
         self.display_name = "Dashboard Granja"
 
+    def _compute_last_update(self):
+        self.last_update = fields.Datetime.now()
+
+    def action_refresh(self):
+        self.last_update = fields.Datetime.now()
+        return {
+            "type": "ir.actions.act_view_reload",
+        }
+
+    @api.depends("last_update")
     def _compute_kpis(self):
         for rec in self:
             flock_model = self.env["broiler.flock"]
@@ -89,27 +121,60 @@ class BroilerFarmDashboard(models.Model):
             log_model = self.env["broiler.daily.log"]
             rec.today_logs_count = log_model.search_count([("date", "=", today)])
 
+    @api.depends("last_update")
     def _compute_graphs(self):
         for rec in self:
-            # Gráfico de lotes por estado (formato correcto para dashboard_graph)
+            flock_model = self.env["broiler.flock"]
+            picking_model = self.env["stock.picking"]
+            broiler_picking_type = self.env.ref("broiler_farm.picking_type_salida_broiler", False)
+            
+            all_flocks = flock_model.search([])
+            all_pickings = picking_model.search([]) if broiler_picking_type else picking_model
+            
+            rec.flock_ids = [(6, 0, all_flocks.ids)]
+            rec.picking_ids = [(6, 0, all_pickings.ids)]
+
+            # Gráfico de lotes por estado
+            active = len(all_flocks.filtered(lambda f: f.state == "active"))
+            closed = len(all_flocks.filtered(lambda f: f.state == "closed"))
+            draft = len(all_flocks.filtered(lambda f: f.state == "draft"))
+            
             flocks_data = [{
                 'key': 'Lotes',
                 'values': [
-                    {'label': 'Activos', 'value': rec.active_flocks or 0, 'type': 'past'},
-                    {'label': 'Cerrados', 'value': rec.closed_flocks or 0, 'type': 'present'},
-                    {'label': 'Borrador', 'value': rec.draft_flocks or 0, 'type': 'future'},
+                    {'label': 'Activos', 'value': active or 0, 'type': 'past'},
+                    {'label': 'Cerrados', 'value': closed or 0, 'type': 'present'},
+                    {'label': 'Borrador', 'value': draft or 0, 'type': 'future'},
                 ]
             }]
             rec.flocks_graph = json.dumps(flocks_data)
 
-            # Gráfico de pickings
+            # Gráfico de pickings por estado
+            pending = len(all_pickings.filtered(lambda p: p.state in ["assigned", "waiting", "confirmed"]))
+            done = len(all_pickings.filtered(lambda p: p.state == "done"))
+            cancel = len(all_pickings.filtered(lambda p: p.state == "cancel"))
+            
             pickings_data = [{
                 'key': 'Pickings',
                 'values': [
-                    {'label': 'Pendientes', 'value': rec.pending_pickings_count or 0, 'type': 'past'},
+                    {'label': 'Pendientes', 'value': pending or 0, 'type': 'past'},
+                    {'label': 'Completados', 'value': done or 0, 'type': 'present'},
+                    {'label': 'Cancelados', 'value': cancel or 0, 'type': 'future'},
                 ]
             }]
             rec.pickings_graph = json.dumps(pickings_data)
+
+            # Gráfico de pesos promedios por lote
+            weights = []
+            for flock in all_flocks:
+                if flock.avg_weight_g:
+                    weights.append({'label': flock.name, 'value': flock.avg_weight_g / 1000})
+            
+            weight_data = [{
+                'key': 'Peso (kg)',
+                'values': weights
+            }]
+            rec.weight_graph = json.dumps(weight_data)
 
     def action_view_pending_pickings(self):
         broiler_picking_type = self.env.ref("broiler_farm.picking_type_salida_broiler", False)

@@ -5,63 +5,73 @@
             <field name="name">broiler.farm.dashboard.form</field>
             <field name="model">broiler.farm.dashboard</field>
             <field name="arch" type="xml">
-                <form string="Dashboard Granja">
+                <form string="Dashboard Granja" create="0" edit="0" delete="0">
                     <div class="o_broiler_dashboard">
-                        <!-- Header con botón -->
-                        <div class="row mx-0 mb-2">
+                        <!-- Header con título -->
+                        <div class="row mx-0 mb-3">
                             <div class="col-12">
-                                <button name="action_view_pending_pickings" type="object" class="btn btn-primary">
+                                <div class="bg-white rounded p-3 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <h2 class="mb-1 text-white"><i class="fa fa-home"/> Dashboard Granja de Pollos</h2>
+                                    <p class="mb-0 text-white-50">Control y seguimiento de lotes, pickings y costos</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón pickings -->
+                        <div class="row mx-0 mb-3">
+                            <div class="col-12">
+                                <button name="action_view_pending_pickings" type="object" class="btn btn-success">
                                     <i class="fa fa-truck"/> Ver Pickings Pendientes
                                 </button>
                             </div>
                         </div>
 
                         <!-- Sección de Cards KPIs -->
-                        <div class="row mx-0 mb-2">
+                        <div class="row mx-0 mb-3">
                             <div class="col-6 col-lg-2 mb-1">
-                                <div class="card h-100 border-primary">
+                                <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);">
                                     <div class="card-body p-2 text-center">
-                                        <h4 class="mb-0"><field name="total_flocks"/></h4>
+                                        <h4 class="mb-0 text-primary"><field name="total_flocks"/></h4>
                                         <small class="text-muted">Total Lotes</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6 col-lg-2 mb-1">
-                                <div class="card h-100 border-success">
+                                <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);">
                                     <div class="card-body p-2 text-center">
-                                        <h4 class="mb-0"><field name="active_flocks"/></h4>
+                                        <h4 class="mb-0 text-success"><field name="active_flocks"/></h4>
                                         <small class="text-muted">Activos</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6 col-lg-2 mb-1">
-                                <div class="card h-100 border-warning">
+                                <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(180deg, #fff3e0 0%, #ffe0b2 100%);">
                                     <div class="card-body p-2 text-center">
-                                        <h4 class="mb-0"><field name="alive_birds"/></h4>
+                                        <h4 class="mb-0 text-warning"><field name="alive_birds"/></h4>
                                         <small class="text-muted">Aves Vivas</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6 col-lg-2 mb-1">
-                                <div class="card h-100 border-danger">
+                                <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(180deg, #ffebee 0%, #ffcdd2 100%);">
                                     <div class="card-body p-2 text-center">
-                                        <h4 class="mb-0"><field name="pending_pickings_count"/></h4>
+                                        <h4 class="mb-0 text-danger"><field name="pending_pickings_count"/></h4>
                                         <small class="text-muted">Pickings Pend.</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6 col-lg-2 mb-1">
-                                <div class="card h-100">
+                                <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(180deg, #f3e5f5 0%, #e1bee7 100%);">
                                     <div class="card-body p-2 text-center">
-                                        <h5 class="mb-0"><field name="total_cost" widget="monetary"/></h5>
+                                        <h5 class="mb-0 text-purple"><field name="total_cost" widget="monetary"/></h5>
                                         <small class="text-muted">Costo Total</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6 col-lg-2 mb-1">
-                                <div class="card h-100">
+                                <div class="card h-100 border-0 shadow-sm" style="background: linear-gradient(180deg, #e0f7fa 0%, #b2ebf2 100%);">
                                     <div class="card-body p-2 text-center">
-                                        <h5 class="mb-0"><field name="avg_weight_g"/> <small>g</small></h5>
+                                        <h5 class="mb-0 text-info"><field name="avg_weight_g"/> <small>g</small></h5>
                                         <small class="text-muted">Peso Prom.</small>
                                     </div>
                                 </div>
@@ -69,46 +79,60 @@
                         </div>
 
                         <!-- Sección de Detalles adicionales (cards) -->
-                        <div class="row mx-0 mb-2">
+                        <div class="row mx-0 mb-3">
                             <div class="col-md-3 mb-2">
-                                <div class="card h-100">
+                                <div class="card h-100 border-0 shadow-sm" style="background: #f8f9fa;">
                                     <div class="card-body p-2 text-center">
-                                        <h5 class="mb-0"><field name="closed_flocks"/></h5>
+                                        <h5 class="mb-0 text-secondary"><field name="closed_flocks"/></h5>
                                         <small class="text-muted">Lotes Cerrados</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-3 mb-2">
-                                <div class="card h-100">
+                                <div class="card h-100 border-0 shadow-sm" style="background: #fff5f5;">
                                     <div class="card-body p-2 text-center">
-                                        <h5 class="mb-0"><field name="dead_birds"/></h5>
+                                        <h5 class="mb-0 text-danger"><field name="dead_birds"/></h5>
                                         <small class="text-muted">Mortalidad</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-3 mb-2">
-                                <div class="card h-100">
+                                <div class="card h-100 border-0 shadow-sm" style="background: #fff8e1;">
                                     <div class="card-body p-2 text-center">
-                                        <h5 class="mb-0"><field name="total_feed_cost" widget="monetary"/></h5>
+                                        <h5 class="mb-0 text-warning"><field name="total_feed_cost" widget="monetary"/></h5>
                                         <small class="text-muted">Costo Alimento</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-3 mb-2">
-                                <div class="card h-100">
+                                <div class="card h-100 border-0 shadow-sm" style="background: #e8eaf6;">
                                     <div class="card-body p-2 text-center">
-                                        <h5 class="mb-0"><field name="avg_fcr"/></h5>
+                                        <h5 class="mb-0 text-indigo"><field name="avg_fcr"/></h5>
                                         <small class="text-muted">FCR</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
+                        <!-- Gráfico de Pesos -->
+                        <div class="row mx-0 mb-3">
+                            <div class="col-md-12 mb-2">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-header bg-info text-white">
+                                        <i class="fa fa-line-chart"/> Peso Promedio por Lote (kg)
+                                    </div>
+                                    <div class="card-body">
+                                        <field name="weight_graph" widget="dashboard_graph" graph_type="line"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Sección de Gráficos -->
-                        <div class="row mx-0 mb-2">
-                            <div class="col-md-6 mb-2">
-                                <div class="card h-100">
-                                    <div class="card-header">
+                        <div class="row mx-0 mb-3">
+                            <div class="col-md-4 mb-2">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                                         <i class="fa fa-pie-chart"/> Estado de Lotes
                                     </div>
                                     <div class="card-body">
@@ -116,13 +140,37 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-2">
-                                <div class="card h-100">
-                                    <div class="card-header">
-                                        <i class="fa fa-bar-chart"/> Pickings Pendientes
+                            <div class="col-md-4 mb-2">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                        <i class="fa fa-bar-chart"/> Pickings por Estado
                                     </div>
                                     <div class="card-body">
                                         <field name="pickings_graph" widget="dashboard_graph" graph_type="bar"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                        <i class="fa fa-list"/> Lista de Lotes
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <field name="flock_ids" widget="many2many_list" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Pickings -->
+                        <div class="row mx-0 mb-3">
+                            <div class="col-md-12 mb-2">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                        <i class="fa fa-truck"/> Lista de Pickings
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <field name="picking_ids" widget="many2many_list" />
                                     </div>
                                 </div>
                             </div>
