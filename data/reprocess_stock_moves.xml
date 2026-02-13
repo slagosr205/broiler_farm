@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Acción de servidor para re-procesar movimientos de stock -->
+        <record id="action_reprocess_stock_moves" model="ir.actions.server">
+            <field name="name">Re-procesar Movimientos de Stock</field>
+            <field name="model_id" ref="model_broiler_daily_log"/>
+            <field name="binding_model_id" ref="model_broiler_daily_log"/>
+            <field name="state">code</field>
+            <field name="code">
+records.action_reprocess_stock_moves()
+            </field>
+        </record>
+    </data>
+</odoo>

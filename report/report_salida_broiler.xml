@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="action_report_salida_broiler" model="ir.actions.report">
+        <field name="name">Recibo Salida Broiler</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">broiler_farm.report_salida_broiler</field>
+        <field name="report_file">broiler_farm.report_salida_broiler</field>
+        <field name="print_report_name">'Salida_Broiler_%s' % object.name</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_us"/>
+    </record>
+
+    <template id="report_salida_broiler">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="broiler_farm.report_salida_broiler_document" t-lang="o._get_report_lang()"/>
+        </t>
+    </template>
+
+    <template id="report_salida_broiler_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <t t-set="o" t-value="o.with_context(lang=o._get_report_lang())"/>
+
+                <div class="page" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+                    <!-- ENCABEZADO -->
+                    <div style="border-bottom: 3px solid #2c3e50; padding-bottom: 12px; margin-bottom: 20px;">
+                        <div class="row">
+                            <div class="col-8">
+                                <h2 style="color: #2c3e50; font-weight: 700; margin: 0; font-size: 22px;">
+                                    RECIBO DE SALIDA - CONSUMO BROILER
+                                </h2>
+                                <h3 style="color: #7f8c8d; font-weight: 400; margin: 4px 0 0 0; font-size: 16px;">
+                                    <span t-field="o.name"/>
+                                </h3>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div style="background-color: #2c3e50; color: white; padding: 8px 16px; border-radius: 6px; display: inline-block;">
+                                    <t t-if="o.state == 'done'">
+                                        <span style="font-size: 14px; font-weight: 600;">VALIDADO</span>
+                                    </t>
+                                    <t t-elif="o.state == 'assigned'">
+                                        <span style="font-size: 14px; font-weight: 600;">LISTO</span>
+                                    </t>
+                                    <t t-elif="o.state == 'confirmed'">
+                                        <span style="font-size: 14px; font-weight: 600;">CONFIRMADO</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span style="font-size: 14px; font-weight: 600;" t-field="o.state"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- INFO GENERAL -->
+                    <div class="row" style="margin-bottom: 20px;">
+                        <div class="col-6">
+                            <table style="width: 100%; font-size: 13px;">
+                                <tr>
+                                    <td style="padding: 4px 8px; font-weight: 600; color: #2c3e50; width: 45%;">Lote:</td>
+                                    <td style="padding: 4px 8px;">
+                                        <span t-if="o.broiler_flock_id" t-field="o.broiler_flock_id"/>
+                                        <span t-else="">-</span>
+                                    </td>
+                                </tr>
+                                <tr style="background-color: #f8f9fa;">
+                                    <td style="padding: 4px 8px; font-weight: 600; color: #2c3e50;">Origen:</td>
+                                    <td style="padding: 4px 8px;">
+                                        <span t-if="o.origin" t-field="o.origin"/>
+                                        <span t-else="">-</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 8px; font-weight: 600; color: #2c3e50;">Tipo de Operación:</td>
+                                    <td style="padding: 4px 8px;">
+                                        <span t-field="o.picking_type_id"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table style="width: 100%; font-size: 13px;">
+                                <tr>
+                                    <td style="padding: 4px 8px; font-weight: 600; color: #2c3e50; width: 45%;">Fecha Programada:</td>
+                                    <td style="padding: 4px 8px;">
+                                        <span t-field="o.scheduled_date" t-options='{"widget": "date"}'/>
+                                    </td>
+                                </tr>
+                                <tr style="background-color: #f8f9fa;">
+                                    <td style="padding: 4px 8px; font-weight: 600; color: #2c3e50;">Fecha Validación:</td>
+                                    <td style="padding: 4px 8px;">
+                                        <span t-if="o.date_done" t-field="o.date_done" t-options='{"widget": "date"}'/>
+                                        <span t-else="" style="color: #95a5a6;">Pendiente</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 8px; font-weight: 600; color: #2c3e50;">Responsable:</td>
+                                    <td style="padding: 4px 8px;">
+                                        <span t-if="o.user_id" t-field="o.user_id"/>
+                                        <span t-else="">-</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- UBICACIONES -->
+                    <div class="row" style="margin-bottom: 20px;">
+                        <div class="col-6">
+                            <div style="background-color: #eaf2e3; border-left: 4px solid #27ae60; padding: 10px 14px; border-radius: 4px;">
+                                <strong style="color: #27ae60; font-size: 12px; text-transform: uppercase;">Ubicación Origen</strong>
+                                <div style="font-size: 14px; margin-top: 4px;">
+                                    <span t-field="o.location_id"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div style="background-color: #fdf2e9; border-left: 4px solid #e67e22; padding: 10px 14px; border-radius: 4px;">
+                                <strong style="color: #e67e22; font-size: 12px; text-transform: uppercase;">Ubicación Destino</strong>
+                                <div style="font-size: 14px; margin-top: 4px;">
+                                    <span t-field="o.location_dest_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TABLA DE PRODUCTOS -->
+                    <t t-set="format_number" t-value="lambda x: int(x) if x == int(x) else x"/>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
+                        <thead>
+                            <tr style="background-color: #2c3e50; color: white;">
+                                <th style="padding: 10px 12px; text-align: left; border-radius: 4px 0 0 0;">#</th>
+                                <th style="padding: 10px 12px; text-align: left;">Producto</th>
+                                <th style="padding: 10px 12px; text-align: right;">Demanda</th>
+                                <th style="padding: 10px 12px; text-align: center;">UdM</th>
+                                <th style="padding: 10px 12px; text-align: right; border-radius: 0 4px 0 0;">Realizado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="index" t-value="0"/>
+                            <t t-foreach="o.move_ids.filtered(lambda m: m.state != 'cancel')" t-as="move">
+                                <t t-set="index" t-value="index + 1"/>
+                                <tr t-attf-style="background-color: {{ 'white' if index % 2 == 1 else '#f8f9fa' }}; border-bottom: 1px solid #ecf0f1;">
+                                    <td style="padding: 10px 12px; color: #7f8c8d;">
+                                        <span t-out="index"/>
+                                    </td>
+                                    <td style="padding: 10px 12px; font-weight: 500;">
+                                        <span t-field="move.product_id"/>
+                                    </td>
+                                    <td style="padding: 10px 12px; text-align: right;">
+                                        <span t-out="format_number(move.product_uom_qty)"/>
+                                    </td>
+                                    <td style="padding: 10px 12px; text-align: center; color: #7f8c8d;">
+                                        <span t-field="move.product_uom"/>
+                                    </td>
+                                    <td style="padding: 10px 12px; text-align: right; font-weight: 600;">
+                                        <t t-if="move.quantity > 0">
+                                            <span t-out="format_number(move.quantity)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span style="color: #bdc3c7;">-</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 2px solid #2c3e50; font-weight: 700;">
+                                <td colspan="2" style="padding: 10px 12px; text-align: right;">TOTAL</td>
+                                <td style="padding: 10px 12px; text-align: right;">
+                                    <span t-out="format_number(sum(o.move_ids.filtered(lambda m: m.state != 'cancel').mapped('product_uom_qty')))"/>
+                                </td>
+                                <td style="padding: 10px 12px; text-align: center; color: #7f8c8d;">kg</td>
+                                <td style="padding: 10px 12px; text-align: right;">
+                                    <span t-out="format_number(sum(o.move_ids.filtered(lambda m: m.state != 'cancel').mapped('quantity')))"/>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- INFO DEL LOTE (si existe) -->
+                    <t t-if="o.broiler_flock_id">
+                        <div style="background-color: #f4f6f7; border: 1px solid #d5dbdb; border-radius: 6px; padding: 14px 18px; margin-bottom: 20px;">
+                            <h4 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+                                Información del Lote
+                            </h4>
+                            <div class="row" style="font-size: 13px;">
+                                <div class="col-3">
+                                    <strong>Granja:</strong>
+                                    <div><span t-if="o.broiler_flock_id.farm_name" t-field="o.broiler_flock_id.farm_name"/><span t-else="">-</span></div>
+                                </div>
+                                <div class="col-3">
+                                    <strong>Galpón:</strong>
+                                    <div><span t-if="o.broiler_flock_id.house" t-field="o.broiler_flock_id.house"/><span t-else="">-</span></div>
+                                </div>
+                                <div class="col-3">
+                                    <strong>Aves Vivas:</strong>
+                                    <div><span t-field="o.broiler_flock_id.alive_qty"/></div>
+                                </div>
+                                <div class="col-3">
+                                    <strong>Edad (días):</strong>
+                                    <div><span t-field="o.broiler_flock_id.age_days"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- NOTAS -->
+                    <t t-if="o.note">
+                        <div style="margin-bottom: 20px;">
+                            <strong style="color: #2c3e50; font-size: 13px;">Notas:</strong>
+                            <div style="font-size: 13px; color: #555; margin-top: 4px;" t-field="o.note"/>
+                        </div>
+                    </t>
+
+                    <!-- FIRMAS -->
+                    <div class="row" style="margin-top: 40px;">
+                        <div class="col-4 text-center">
+                            <div style="border-top: 1px solid #2c3e50; margin-top: 60px; padding-top: 8px;">
+                                <strong style="font-size: 12px; color: #2c3e50;">Elaborado por</strong>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div style="border-top: 1px solid #2c3e50; margin-top: 60px; padding-top: 8px;">
+                                <strong style="font-size: 12px; color: #2c3e50;">Recibido por</strong>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div style="border-top: 1px solid #2c3e50; margin-top: 60px; padding-top: 8px;">
+                                <strong style="font-size: 12px; color: #2c3e50;">Autorizado por</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

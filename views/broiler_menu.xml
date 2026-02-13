@@ -1,0 +1,6 @@
+<odoo>
+    <menuitem id="broiler_root" name="Granja Pollos" sequence="10" web_icon="broiler_farm,static/description/icon.png"/>
+    <menuitem id="broiler_menu_dashboard" name="Dashboard" parent="broiler_root" sequence="1" action="action_broiler_farm_dashboard"/>
+    <menuitem id="broiler_menu_flocks" name="Lotes" parent="broiler_root" sequence="10" action="action_broiler_flock"/>
+    <menuitem id="broiler_menu_logs" name="Registros diarios" parent="broiler_root" sequence="20" action="action_broiler_daily_log"/>
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_broiler_flock_user,broiler.flock user,model_broiler_flock,base.group_user,1,1,1,1
+access_broiler_daily_log_user,broiler.daily.log user,model_broiler_daily_log,base.group_user,1,1,1,1
+access_broiler_feed_consumption_user,broiler.feed.consumption user,model_broiler_feed_consumption,base.group_user,1,1,1,1
+access_broiler_farm_dashboard_user,broiler.farm.dashboard user,model_broiler_farm_dashboard,base.group_user,1,1,1,1

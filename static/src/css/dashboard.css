@@ -1,0 +1,93 @@
+.o_broiler_dashboard {
+    padding: 16px;
+}
+
+.o_broiler_dashboard_header {
+    margin-bottom: 24px;
+}
+
+.o_broiler_dashboard_header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.o_broiler_dashboard_stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.o_stat_card {
+    flex: 1;
+    min-width: 200px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.o_stat_card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.o_stat_icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    font-size: 20px;
+    color: #fff;
+}
+
+.o_stat_flocks .o_stat_icon { background: #3498db; }
+.o_stat_active .o_stat_icon { background: #27ae60; }
+.o_stat_closed .o_stat_icon { background: #95a5a6; }
+.o_stat_draft .o_stat_icon { background: #f39c12; }
+.o_stat_birds .o_stat_icon { background: #1abc9c; }
+.o_stat_dead .o_stat_icon { background: #e74c3c; }
+.o_stat_cost .o_stat_icon { background: #9b59b6; }
+.o_stat_feed .o_stat_icon { background: #27ae60; }
+.o_stat_weight .o_stat_icon { background: #f1c40f; }
+.o_stat_fcr .o_stat_icon { background: #e67e22; }
+.o_stat_pickings .o_stat_icon { background: #fff; color: #e74c3c; }
+.o_stat_logs .o_stat_icon { background: #3498db; }
+
+.o_stat_content {
+    flex: 1;
+}
+
+.o_stat_value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.2;
+}
+
+.o_stat_unit {
+    font-size: 14px;
+    font-weight: 400;
+    color: #7f8c8d;
+    margin-left: 4px;
+}
+
+.o_stat_label {
+    font-size: 13px;
+    color: #7f8c8d;
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    .o_stat_card {
+        min-width: 100%;
+    }
+}

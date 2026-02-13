@@ -1,0 +1,25 @@
+<odoo>
+    <record id="view_purchase_order_form_broiler" model="ir.ui.view">
+        <field name="name">purchase.order.form.broiler</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet//group" position="inside">
+                <group string="Granja">
+                    <field name="broiler_flock_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_list_broiler" model="ir.ui.view">
+        <field name="name">purchase.order.list.broiler</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="broiler_flock_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

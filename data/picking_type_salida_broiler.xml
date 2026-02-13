@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Ubicación virtual de consumo para broiler -->
+        <record id="location_consumo_broiler" model="stock.location">
+            <field name="name">Consumo Broiler</field>
+            <field name="usage">customer</field>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+        </record>
+
+        <!-- Secuencia para Salida Broiler -->
+        <record id="seq_picking_type_salida_broiler" model="ir.sequence">
+            <field name="name">Salida Broiler</field>
+            <field name="prefix">SB_</field>
+            <field name="padding">5</field>
+        </record>
+
+        <!-- Picking Type: Salida Broiler -->
+        <record id="picking_type_salida_broiler" model="stock.picking.type">
+            <field name="name">Salida Broiler</field>
+            <field name="code">outgoing</field>
+            <field name="sequence_code">SB</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="default_location_src_id" ref="stock.stock_location_stock"/>
+            <field name="default_location_dest_id" ref="broiler_farm.location_consumo_broiler"/>
+            <field name="sequence_id" ref="seq_picking_type_salida_broiler"/>
+        </record>
+    </data>
+</odoo>
